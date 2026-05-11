@@ -3,7 +3,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../models/interview_session.dart';
 import '../../models/interview_report.dart';
+import '../../config/app_config.dart';
 import '../../services/ai_service.dart';
+import '../../services/base_ai_service.dart';
+import '../../services/mock_ai_service.dart';
 import '../../services/speech_service.dart';
 import '../../services/dashboard_service.dart';
 import '../../widgets/glass_card.dart';
@@ -21,7 +24,8 @@ class InterviewScreen extends StatefulWidget {
 
 class _InterviewScreenState extends State<InterviewScreen> {
   final _textController = TextEditingController();
-  late final AiService _ai;
+  // Use MockAiService when MOCK_MODE=true, real AiService otherwise
+  final BaseAiService _ai = AppConfig.mockMode ? MockAiService() : AiService();
   final _speech = SpeechService.instance;
 
   // State
@@ -46,7 +50,6 @@ class _InterviewScreenState extends State<InterviewScreen> {
   @override
   void initState() {
     super.initState();
-    _ai = AiService();
     _speech.reset();
     _initInterview();
   }

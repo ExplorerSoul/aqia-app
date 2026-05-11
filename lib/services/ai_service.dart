@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'api_client.dart';
+import 'base_ai_service.dart';
 import 'prompt_builder.dart';
 import '../models/interview_report.dart';
 
 /// Wraps the backend /api/chat proxy (Groq Llama-3.3-70b).
 /// Maintains conversation history for the duration of an interview session.
-class AiService {
+class AiService extends BaseAiService {
   final PromptBuilder _promptBuilder = PromptBuilder();
 
   final List<Map<String, dynamic>> _conversationHistory = [];

@@ -3,8 +3,10 @@ import '../../theme/app_theme.dart';
 import '../../widgets/glass_card.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_client.dart';
+import '../../config/app_config.dart';
 import 'signup_screen.dart';
 import '../home/dashboard_screen.dart';
+import '../test/backend_test_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -207,6 +209,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
+
+                  // Backend test button — visible in debug/mock mode only
+                  if (AppConfig.mockMode || true) // always show for easy access during testing
+                    TextButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BackendTestScreen()),
+                      ),
+                      icon: const Icon(Icons.wifi_tethering, size: 16, color: AppTheme.grayText),
+                      label: const Text('Test Backend Connection',
+                          style: TextStyle(fontSize: 12, color: AppTheme.grayText)),
+                    ),
                 ],
               ),
             ),
