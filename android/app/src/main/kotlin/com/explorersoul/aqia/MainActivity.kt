@@ -1,4 +1,4 @@
-package com.example.aqia
+package com.explorersoul.aqia
 
 import io.flutter.embedding.android.FlutterActivity
 

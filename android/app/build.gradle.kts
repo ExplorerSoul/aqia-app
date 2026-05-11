@@ -17,7 +17,7 @@ if (keyPropertiesFile.exists()) {
 android {
     namespace = "com.explorersoul.aqia"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -30,7 +30,7 @@ android {
 
     defaultConfig {
         applicationId = "com.explorersoul.aqia"
-        minSdk = 21  // Android 5.0+ — covers 99%+ of devices
+        minSdk = 23  // Android 6.0+ — required by record plugin
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

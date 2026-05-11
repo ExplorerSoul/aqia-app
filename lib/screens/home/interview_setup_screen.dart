@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:pdfx/pdfx.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/starry_background.dart';
 import '../../models/interview_session.dart';
@@ -81,36 +81,18 @@ class _InterviewSetupScreenState extends State<InterviewSetupScreen> {
   }
 
   Future<String> _extractPdfText(String path) async {
-    final document = await PdfDocument.openFile(path);
-    final buffer = StringBuffer();
-    for (int i = 1; i <= document.pagesCount; i++) {
-      final page = await document.getPage(i);
-      final pageImage = await page.render(
-        width: page.width,
-        height: page.height,
-      );
-      pageImage?.dispose();
-      await page.close();
-    }
-    await document.close();
-    // pdfx renders pages as images; for text extraction we use the raw bytes approach
-    // Fall back to reading the file as text (works for text-based PDFs)
-    return buffer.toString();
-  }
-
-  /// Better text extraction using pdfx's text layer
-  Future<String> _extractTextFromPdf(String path) async {
     try {
-      final document = await PdfDocument.openFile(path);
+      final bytes = await File(path).readAsBytes();
+      final document = PdfDocument(inputBytes: bytes);
+      final extractor = PdfTextExtractor(document);
       final buffer = StringBuffer();
-      for (int i = 1; i <= document.pagesCount; i++) {
-        final page = await document.getPage(i);
-        // pdfx doesn't expose text directly; we use the file bytes approach
-        await page.close();
+      for (int i = 0; i < document.pages.count; i++) {
+        final text = extractor.extractText(startPageIndex: i, endPageIndex: i);
+        buffer.writeln(text);
       }
-      await document.close();
-      return buffer.toString();
-    } catch (_) {
+      document.dispose();
+      return buffer.toString().trim();
+    } catch (e) {
       return '';
     }
   }
@@ -363,7 +345,7 @@ class _InterviewSetupScreenState extends State<InterviewSetupScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(
-              '${_resumeText!.split(' ').length} words extracted',
+              '✓ Resume ready',
               style: TextStyle(color: Colors.green.shade400, fontSize: 12),
             ),
           ),

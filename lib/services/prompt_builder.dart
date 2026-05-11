@@ -5,12 +5,8 @@ class PromptBuilder {
     'Software Engineering',
     'Data Science',
     'Product Management',
-    'UI/UX Design',
-    'Cybersecurity',
-    'Cloud Computing',
     'DevOps',
     'Machine Learning',
-    'AI Research',
   ];
 
   static const Map<String, Map<String, String>> _domainTemplates = {

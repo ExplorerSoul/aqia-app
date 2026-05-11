@@ -8,6 +8,7 @@ import '../auth/login_screen.dart';
 import 'interview_setup_screen.dart';
 import 'analytics_screen.dart';
 import 'profile_screen.dart';
+import 'question_bank_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -178,6 +179,10 @@ class _HomeTabState extends State<_HomeTab> {
 
             // Start Interview button
             _buildStartButton(context),
+            const SizedBox(height: 16),
+
+            // Question Bank button
+            _buildQuestionBankButton(context),
             const SizedBox(height: 28),
 
             // Stats row
@@ -196,6 +201,42 @@ class _HomeTabState extends State<_HomeTab> {
         ),
       ),
     );
+  }
+
+  Widget _buildQuestionBankButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const QuestionBankScreen()),
+          ),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: AppTheme.gradientBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppTheme.gradientBlue.withValues(alpha: 0.4)),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.quiz_outlined, color: AppTheme.gradientBlue, size: 22),
+                SizedBox(width: 10),
+                Text('Question Bank',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.gradientBlue)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ).animate(delay: 200.ms).fadeIn(duration: 400.ms);
   }
 
   Widget _buildStartButton(BuildContext context) {

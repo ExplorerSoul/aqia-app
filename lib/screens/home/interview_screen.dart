@@ -9,6 +9,7 @@ import '../../services/dashboard_service.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/waveform_animation.dart';
 import 'interview_report_screen.dart';
+import 'question_bank_screen.dart';
 
 class InterviewScreen extends StatefulWidget {
   final InterviewConfig config;
@@ -245,6 +246,17 @@ class _InterviewScreenState extends State<InterviewScreen> {
 
       // Save to backend (best-effort, non-blocking)
       _saveInterviewToBackend(reviewJson);
+
+      // Save to local question bank
+      final reviewQuestions = (reviewJson['questions'] as List<dynamic>?)
+              ?.map((e) => e as Map<String, dynamic>)
+              .toList() ??
+          [];
+      QuestionBankService.addFromSession(
+        domain: widget.config.domain,
+        qaPairs: _qaPairs,
+        reviewQuestions: reviewQuestions,
+      );
 
       if (!mounted) return;
       Navigator.pushReplacement(

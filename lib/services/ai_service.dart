@@ -25,7 +25,7 @@ class AiService {
   }) async {
     _domain = domain;
     _maxQuestions = maxQuestions;
-    _questionCount = 0;
+    _questionCount = 1; // opener counts as question 1
     _conversationHistory.clear();
 
     final analysis = _promptBuilder.analyzeResume(resumeText);
@@ -44,9 +44,9 @@ class AiService {
   Future<String> sendMessage(String userResponse) async {
     if (userResponse.isNotEmpty) {
       _conversationHistory.add({'role': 'user', 'content': userResponse});
-      _questionCount++;
     }
 
+    // After submitting answer to question N, check if we've hit the limit
     if (_questionCount >= _maxQuestions) {
       return 'END_OF_INTERVIEW';
     }
@@ -60,6 +60,7 @@ class AiService {
 
     final aiText = response['choices'][0]['message']['content'] as String;
     _conversationHistory.add({'role': 'assistant', 'content': aiText});
+    _questionCount++; // increment after receiving next question
     return aiText;
   }
 
