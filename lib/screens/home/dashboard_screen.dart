@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/starry_background.dart';
+import '../../widgets/user_banner_carousel.dart';
 import '../../services/auth_service.dart';
 import '../../services/dashboard_service.dart';
 import '../auth/login_screen.dart';
@@ -183,6 +184,10 @@ class _HomeTabState extends State<_HomeTab> {
 
             // Question Bank button
             _buildQuestionBankButton(context),
+            const SizedBox(height: 28),
+
+            // Community spotlight banner
+            const UserBannerCarousel(),
             const SizedBox(height: 28),
 
             // Stats row
