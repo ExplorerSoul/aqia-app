@@ -113,7 +113,7 @@ class ProfileScreen extends StatelessWidget {
                       const Text('Backend',
                           style: TextStyle(fontSize: 15, color: AppTheme.whiteText)),
                       Text(
-                        const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:8000'),
+                        const String.fromEnvironment('API_BASE_URL', defaultValue: 'https://aqia-backend.onrender.com'),
                         style: TextStyle(fontSize: 12, color: AppTheme.grayText),
                         overflow: TextOverflow.ellipsis,
                       ),

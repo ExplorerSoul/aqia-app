@@ -30,7 +30,7 @@ class ApiClient {
 
   static const String _baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://127.0.0.1:8000',
+    defaultValue: 'https://aqia-backend.onrender.com',
   );
 
   String get baseUrl => _baseUrl;

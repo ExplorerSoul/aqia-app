@@ -44,3 +44,12 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Signing — NEVER commit these
+android/key.properties
+*.keystore
+*.jks
+
+# Local config
+.env
+lib/config/keys.dart
+
