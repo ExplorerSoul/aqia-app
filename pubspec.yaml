@@ -1,0 +1,80 @@
+name: aqia
+description: "AQIA - AI Interview Assistant. Practice interviews with AI-powered feedback."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # HTTP & API
+  http: ^1.2.2
+
+  # State Management
+  provider: ^6.1.2
+
+  # Charts
+  fl_chart: ^0.69.0
+
+  # Audio playback (for backend TTS MP3)
+  audioplayers: ^6.1.0
+
+  # Speech-to-text (live transcript display)
+  speech_to_text: ^7.0.0
+
+  # Text-to-speech fallback
+  flutter_tts: ^4.1.0
+
+  # Raw audio recording for Whisper upload
+  record: ^5.2.0
+
+  # Temp directory for audio files
+  path_provider: ^2.1.4
+
+  # UI & Animations
+  flutter_animate: ^4.5.0
+
+  # Icons
+  font_awesome_flutter: ^10.7.0
+
+  # Storage (JWT token persistence)
+  shared_preferences: ^2.3.2
+
+  # File picker (resume PDF)
+  file_picker: ^8.1.6
+
+  # PDF text extraction
+  pdfx: ^2.6.0
+
+  # Utils
+  intl: ^0.19.0
+  google_fonts: ^6.2.1
+
+  # JWT decode (check expiry)
+  jwt_decoder: ^2.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+  flutter_lints: ^5.0.0
+
+flutter_launcher_icons:
+  image_path: "assets/aqia_app_icon.png"
+  android: true
+  ios: true
+  web:
+    generate: true
+    background_color: "#0F0A1E"
+    theme_color: "#7C3AED"
+
+flutter:
+  assets:
+    - assets/aqia_app_icon.png
+  uses-material-design: true
