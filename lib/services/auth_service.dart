@@ -22,6 +22,15 @@ class AuthService {
     await TokenService.instance.saveToken(token);
     if (name != null && name.isNotEmpty) {
       await TokenService.instance.saveName(name);
+    } else {
+      // Fetch from backend in case name was set server-side
+      try {
+        final profile = await ApiClient.instance.get('/api/me');
+        final fetchedName = profile['name'] as String?;
+        if (fetchedName != null && fetchedName.isNotEmpty) {
+          await TokenService.instance.saveName(fetchedName);
+        }
+      } catch (_) {}
     }
   }
 
@@ -37,7 +46,7 @@ class AuthService {
     final token = data['access_token'] as String?;
     if (token == null) throw const ApiException(500, 'No token in login response');
     await TokenService.instance.saveToken(token);
-    // Fetch name from backend so profile shows real name
+    // Always fetch name from backend after login
     try {
       final profile = await ApiClient.instance.get('/api/me');
       final name = profile['name'] as String?;
