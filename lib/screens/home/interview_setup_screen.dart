@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/starry_background.dart';
 import '../../models/interview_session.dart';
 import '../../services/prompt_builder.dart';
 import 'interview_screen.dart';
@@ -161,8 +160,7 @@ class _InterviewSetupScreenState extends State<InterviewSetupScreen> {
         title: const Text('Interview Setup',
             style: TextStyle(color: AppTheme.whiteText, fontWeight: FontWeight.w600, fontSize: 18)),
       ),
-      body: StarryBackground(
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +182,6 @@ class _InterviewSetupScreenState extends State<InterviewSetupScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 

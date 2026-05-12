@@ -2,37 +2,41 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 /// Singleton that manages the JWT token lifecycle.
-/// All services read the token from here — never from raw SharedPreferences.
 class TokenService {
   TokenService._();
   static final TokenService instance = TokenService._();
 
   static const _key = 'aqia_token';
+  static const _nameKey = 'aqia_user_name';
 
   String? _cachedToken;
+  String? _cachedName;
 
-  /// Save token to persistent storage and in-memory cache.
   Future<void> saveToken(String token) async {
     _cachedToken = token;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, token);
   }
 
-  /// Load token from persistent storage (called once at startup).
+  /// Save the user's display name separately (JWT doesn't include it).
+  Future<void> saveName(String name) async {
+    _cachedName = name;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_nameKey, name);
+  }
+
   Future<String?> loadToken() async {
     final prefs = await SharedPreferences.getInstance();
     _cachedToken = prefs.getString(_key);
+    _cachedName = prefs.getString(_nameKey);
     return _cachedToken;
   }
 
-  /// Return cached token synchronously (after [loadToken] has been called).
   String? get token => _cachedToken;
 
-  /// Authorization header map, ready to pass to http requests.
   Map<String, String> get authHeader =>
       _cachedToken != null ? {'Authorization': 'Bearer $_cachedToken'} : {};
 
-  /// True if a token exists and has not expired.
   bool get isValid {
     if (_cachedToken == null) return false;
     try {
@@ -42,7 +46,6 @@ class TokenService {
     }
   }
 
-  /// Decode the token payload (without verifying signature).
   Map<String, dynamic> get payload {
     if (_cachedToken == null) return {};
     try {
@@ -55,10 +58,18 @@ class TokenService {
   String? get userEmail => payload['sub'] as String?;
   String? get userId => payload['id'] as String?;
 
-  /// Clear token from memory and storage (logout).
+  /// Returns the stored display name, or derives one from email.
+  String get displayName {
+    if (_cachedName != null && _cachedName!.isNotEmpty) return _cachedName!;
+    final email = userEmail ?? '';
+    return email.contains('@') ? email.split('@')[0] : email;
+  }
+
   Future<void> clearToken() async {
     _cachedToken = null;
+    _cachedName = null;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
+    await prefs.remove(_nameKey);
   }
 }

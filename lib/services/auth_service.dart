@@ -2,12 +2,11 @@ import 'api_client.dart';
 import 'token_service.dart';
 
 /// Handles registration and login against the AQIA backend JWT auth system.
-/// No Firebase — all auth is via /api/register and /api/login.
 class AuthService {
   AuthService._();
   static final AuthService instance = AuthService._();
 
-  /// Register a new account. Saves the returned JWT automatically.
+  /// Register a new account. Saves the returned JWT and name automatically.
   Future<void> register({
     required String email,
     required String password,
@@ -21,6 +20,9 @@ class AuthService {
     final token = data['access_token'] as String?;
     if (token == null) throw const ApiException(500, 'No token in register response');
     await TokenService.instance.saveToken(token);
+    if (name != null && name.isNotEmpty) {
+      await TokenService.instance.saveName(name);
+    }
   }
 
   /// Login with email + password. Saves the returned JWT automatically.
@@ -37,14 +39,13 @@ class AuthService {
     await TokenService.instance.saveToken(token);
   }
 
-  /// Clear the stored token (logout).
+  /// Clear the stored token and name (logout).
   Future<void> logout() async {
     await TokenService.instance.clearToken();
   }
 
-  /// True if a valid (non-expired) token is stored.
   bool get isLoggedIn => TokenService.instance.isValid;
-
   String? get userEmail => TokenService.instance.userEmail;
   String? get userId => TokenService.instance.userId;
+  String get displayName => TokenService.instance.displayName;
 }

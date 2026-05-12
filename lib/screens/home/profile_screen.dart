@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/glass_card.dart';
 import '../../services/auth_service.dart';
-import '../../services/token_service.dart';
 import '../auth/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -11,10 +10,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final email = AuthService.instance.userEmail ?? '';
-    final payload = TokenService.instance.payload;
-    // Use name from JWT if available, otherwise derive from email
-    final name = payload['name'] as String? ??
-        (email.contains('@') ? email.split('@')[0] : email);
+    final name = AuthService.instance.displayName;
     final displayName = name.isNotEmpty ? name : email;
     final initials = displayName.isNotEmpty
         ? displayName.trim().split(' ').map((w) => w.isNotEmpty ? w[0].toUpperCase() : '').take(2).join()

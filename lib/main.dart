@@ -28,7 +28,7 @@ class AQIAApp extends StatelessWidget {
     return MaterialApp(
       title: 'AQIA - AI Mock Interview Assistant',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
       home: isLoggedIn ? const DashboardScreen() : const LoginScreen(),
     );
   }

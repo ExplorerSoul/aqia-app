@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/starry_background.dart';
 import '../../widgets/user_banner_carousel.dart';
 import '../../services/auth_service.dart';
 import '../../services/dashboard_service.dart';
@@ -24,24 +23,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StarryBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildAppBar(),
-              Expanded(
-                child: IndexedStack(
-                  index: _selectedIndex,
-                  children: const [
-                    _HomeTab(),
-                    AnalyticsScreen(),
-                    ProfileScreen(),
-                  ],
-                ),
+      backgroundColor: AppTheme.pageBg,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildAppBar(),
+            Expanded(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: const [
+                  _HomeTab(),
+                  AnalyticsScreen(),
+                  ProfileScreen(),
+                ],
               ),
-              _buildBottomNav(),
-            ],
-          ),
+            ),
+            _buildBottomNav(),
+          ],
         ),
       ),
     );
@@ -56,20 +54,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      decoration: const BoxDecoration(
+        color: AppTheme.surface,
+        border: Border(bottom: BorderSide(color: AppTheme.border)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             _appBarTitle,
             style: const TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2, color: AppTheme.whiteText,
+              fontSize: 20, fontWeight: FontWeight.w700,
+              color: AppTheme.textPrimary, letterSpacing: -0.3,
             ),
           ),
           if (_selectedIndex == 2)
             IconButton(
-              icon: const Icon(Icons.logout, color: AppTheme.grayText),
+              icon: const Icon(Icons.logout, color: AppTheme.textMuted, size: 22),
               onPressed: () async {
                 await AuthService.instance.logout();
                 if (mounted) {
@@ -88,35 +91,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildBottomNav() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: AppTheme.carbonGrayDark.withValues(alpha: 0.95),
-        border: Border(top: BorderSide(color: AppTheme.glassBorder)),
+      decoration: const BoxDecoration(
+        color: AppTheme.surface,
+        border: Border(top: BorderSide(color: AppTheme.border)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _navItem(Icons.home, 'Home', 0),
-          _navItem(Icons.bar_chart, 'Analytics', 1),
-          _navItem(Icons.person, 'Profile', 2),
+          _navItem(Icons.home_outlined, Icons.home, 'Home', 0),
+          _navItem(Icons.bar_chart_outlined, Icons.bar_chart, 'Analytics', 1),
+          _navItem(Icons.person_outline, Icons.person, 'Profile', 2),
         ],
       ),
     );
   }
 
-  Widget _navItem(IconData icon, String label, int index) {
+  Widget _navItem(IconData icon, IconData activeIcon, String label, int index) {
     final isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedIndex = index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 26, color: isSelected ? AppTheme.purplePrimary : AppTheme.grayText),
-          const SizedBox(height: 4),
+          Icon(isSelected ? activeIcon : icon,
+              size: 24, color: isSelected ? AppTheme.accent : AppTheme.textMuted),
+          const SizedBox(height: 3),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              color: isSelected ? AppTheme.purplePrimary : AppTheme.grayText,
+              fontSize: 11,
+              color: isSelected ? AppTheme.accent : AppTheme.textMuted,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -155,53 +159,46 @@ class _HomeTabState extends State<_HomeTab> {
   @override
   Widget build(BuildContext context) {
     final email = AuthService.instance.userEmail ?? '';
-    final displayName = email.contains('@') ? email.split('@')[0] : email;
+    final displayName = AuthService.instance.displayName;
 
     return RefreshIndicator(
       onRefresh: _fetchDashboard,
-      color: AppTheme.purplePrimary,
+      color: AppTheme.accent,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               'Welcome back, $displayName!',
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppTheme.whiteText),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary, letterSpacing: -0.3),
             ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0),
             const SizedBox(height: 4),
-            Text(
+            const Text(
               'Ready to ace your next interview?',
-              style: TextStyle(fontSize: 15, color: AppTheme.lightGrayText),
+              style: TextStyle(fontSize: 14, color: AppTheme.textSecondary),
             ).animate(delay: 100.ms).fadeIn(duration: 400.ms),
             const SizedBox(height: 24),
-
-            // Start Interview button
             _buildStartButton(context),
-            const SizedBox(height: 16),
-
-            // Question Bank button
+            const SizedBox(height: 12),
             _buildQuestionBankButton(context),
             const SizedBox(height: 28),
-
-            // Community spotlight banner
             const UserBannerCarousel(),
             const SizedBox(height: 28),
-
-            // Stats row
             if (_loading)
               const Center(child: Padding(
                 padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(color: AppTheme.purplePrimary),
+                child: CircularProgressIndicator(color: AppTheme.accent),
               ))
             else ...[
               _buildStatsRow(_data!),
               const SizedBox(height: 24),
               _buildRecentInterviews(_data!),
             ],
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -211,34 +208,18 @@ class _HomeTabState extends State<_HomeTab> {
   Widget _buildQuestionBankButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const QuestionBankScreen()),
-          ),
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: AppTheme.gradientBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.gradientBlue.withValues(alpha: 0.4)),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.quiz_outlined, color: AppTheme.gradientBlue, size: 22),
-                SizedBox(width: 10),
-                Text('Question Bank',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.gradientBlue)),
-              ],
-            ),
-          ),
+      child: OutlinedButton.icon(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const QuestionBankScreen()),
+        ),
+        icon: const Icon(Icons.quiz_outlined, size: 18),
+        label: const Text('Question Bank'),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          side: const BorderSide(color: AppTheme.border),
+          foregroundColor: AppTheme.textSecondary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
     ).animate(delay: 200.ms).fadeIn(duration: 400.ms);
@@ -247,43 +228,29 @@ class _HomeTabState extends State<_HomeTab> {
   Widget _buildStartButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: Container(
-        decoration: AppTheme.buttonGradientDecoration(),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const InterviewSetupScreen()),
-            ).then((_) => _fetchDashboard()),
-            borderRadius: BorderRadius.circular(12),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 18),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.rocket_launch, size: 24, color: Colors.white),
-                  SizedBox(width: 12),
-                  Text('Start Interview',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5)),
-                ],
-              ),
-            ),
-          ),
+      child: ElevatedButton.icon(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const InterviewSetupScreen()),
+        ).then((_) => _fetchDashboard()),
+        icon: const Icon(Icons.rocket_launch, size: 18),
+        label: const Text('New Interview'),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
-    ).animate(delay: 150.ms).fadeIn(duration: 500.ms).scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1));
+    ).animate(delay: 150.ms).fadeIn(duration: 500.ms);
   }
 
   Widget _buildStatsRow(DashboardData data) {
     return Row(
       children: [
-        Expanded(child: _statCard('Total', '${data.totalInterviews}', Icons.bar_chart, AppTheme.gradientBlue)),
+        Expanded(child: _statCard('Total', '${data.totalInterviews}', Icons.bar_chart, AppTheme.accent)),
         const SizedBox(width: 12),
-        Expanded(child: _statCard('Best', data.highestScore > 0 ? '${data.highestScore}%' : '—', Icons.emoji_events, Colors.amber)),
+        Expanded(child: _statCard('Best', data.highestScore > 0 ? '${data.highestScore}%' : '—', Icons.emoji_events, AppTheme.success)),
         const SizedBox(width: 12),
-        Expanded(child: _statCard('Avg', data.avgScore > 0 ? '${data.avgScore}%' : '—', Icons.trending_up, AppTheme.purplePrimary)),
+        Expanded(child: _statCard('Avg', data.avgScore > 0 ? '${data.avgScore}%' : '—', Icons.trending_up, AppTheme.warning)),
       ],
     ).animate(delay: 200.ms).fadeIn(duration: 400.ms);
   }
@@ -292,17 +259,27 @@ class _HomeTabState extends State<_HomeTab> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(height: 8),
-          Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-          const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 11, color: AppTheme.grayText)),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(height: 10),
+          Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: color)),
+          const SizedBox(height: 2),
+          Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textMuted, fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -313,43 +290,46 @@ class _HomeTabState extends State<_HomeTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Recent Interviews',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.whiteText)),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary)),
         const SizedBox(height: 12),
         if (data.recentInterviews.isEmpty)
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppTheme.carbonGrayDark,
+              color: AppTheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.glassBorder),
+              border: Border.all(color: AppTheme.border),
             ),
-            child: Center(
+            child: const Center(
               child: Text('No interviews yet. Start one!',
-                  style: TextStyle(color: AppTheme.grayText)),
+                  style: TextStyle(color: AppTheme.textMuted)),
             ),
           )
         else
           ...data.recentInterviews.asMap().entries.map((e) {
             final interview = e.value;
+            final score = interview.score ?? 0;
+            final sc = score >= 80 ? AppTheme.success : score >= 60 ? AppTheme.warning : AppTheme.danger;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: 8),
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppTheme.carbonGrayDark,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.glassBorder),
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppTheme.border),
+                  boxShadow: AppTheme.shadowSm,
                 ),
                 child: Row(
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 36,
+                      height: 36,
                       decoration: BoxDecoration(
-                        color: AppTheme.purplePrimary.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(10),
+                        color: AppTheme.accentLight,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.work_outline, color: AppTheme.purplePrimary, size: 20),
+                      child: const Icon(Icons.work_outline, color: AppTheme.accent, size: 18),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -357,40 +337,29 @@ class _HomeTabState extends State<_HomeTab> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(interview.role,
-                              style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.whiteText)),
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
                           Text(interview.date,
-                              style: TextStyle(fontSize: 12, color: AppTheme.grayText)),
+                              style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
                         ],
                       ),
                     ),
                     if (interview.score != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _scoreColor(interview.score!).withValues(alpha: 0.2),
+                          color: sc.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: sc.withValues(alpha: 0.3)),
                         ),
-                        child: Text(
-                          '${interview.score}%',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: _scoreColor(interview.score!)),
-                        ),
+                        child: Text('${interview.score}%',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: sc)),
                       ),
                   ],
                 ),
-              ).animate(delay: (e.key * 60).ms).fadeIn(duration: 300.ms).slideX(begin: 0.05, end: 0),
+              ).animate(delay: (e.key * 60).ms).fadeIn(duration: 300.ms),
             );
           }),
       ],
     );
-  }
-
-  Color _scoreColor(int score) {
-    if (score >= 80) return Colors.green.shade400;
-    if (score >= 60) return Colors.amber;
-    return Colors.red.shade400;
   }
 }

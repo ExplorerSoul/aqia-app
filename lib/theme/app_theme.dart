@@ -1,319 +1,249 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// AQIA app theme — matches the website's clean SaaS design language.
+/// White/light base, blue accent (#2563EB), neutral grays.
 class AppTheme {
-  // Core black & white base
-  static const Color pureBlack = Color(0xFF000000);
-  static const Color deepBlack = Color(0xFF080808);
-  static const Color carbonBlack = Color(0xFF0E0E0E);
+  // ── Brand accent ──────────────────────────────────────────────────────────
+  static const Color accent        = Color(0xFF2563EB); // blue-600
+  static const Color accentHover   = Color(0xFF1D4ED8); // blue-700
+  static const Color accentLight   = Color(0xFFEFF6FF); // blue-50
+  static const Color accentBorder  = Color(0xFFBFDBFE); // blue-200
 
-  // Smoky grayscale (pure black & white)
-  static const Color carbonGrayDark = Color(0xFF141414);
-  static const Color carbonGray = Color(0xFF1A1A1A);
-  static const Color carbonGrayLight = Color(0xFF222222);
-  static const Color carbonGrayLighter = Color(0xFF2A2A2A);
-  static const Color mediumGray = Color(0xFF1E1E1E);
-  static const Color darkGray = Color(0xFF121212);
+  // ── Semantic ──────────────────────────────────────────────────────────────
+  static const Color success       = Color(0xFF16A34A);
+  static const Color successLight  = Color(0xFFF0FDF4);
+  static const Color successBorder = Color(0xFFBBF7D0);
+  static const Color danger        = Color(0xFFDC2626);
+  static const Color dangerLight   = Color(0xFFFEF2F2);
+  static const Color dangerBorder  = Color(0xFFFECACA);
+  static const Color warning       = Color(0xFFF59E0B);
+  static const Color warningLight  = Color(0xFFFFFBEB);
 
-  // Grayscale accent (black & white theme)
-  static const Color blueDark = Color(0xFF1A1A1A);
-  static const Color bluePrimary = Color(0xFF525252);
-  static const Color blueLight = Color(0xFF737373);
-  static const Color blueBright = Color(0xFFE5E5E5);
-  static const Color blueAccent = Color(0xFFA3A3A3);
+  // ── Backgrounds ───────────────────────────────────────────────────────────
+  static const Color pageBg        = Color(0xFFF8FAFC); // slate-50
+  static const Color surface       = Color(0xFFFFFFFF); // white
+  static const Color surfaceHover  = Color(0xFFF1F5F9); // slate-100
 
-  // Purple-blue gradient for buttons & accents (AQIA brand)
-  static const Color purplePrimary = Color(0xFF7C3AED);
-  static const Color purpleDark = Color(0xFF6D28D9);
-  static const Color bluePink = Color(0xFFEC4899);
-  static const Color gradientBlue = Color(0xFF3B82F6);
-  static const Color primaryAccent = blueAccent;
-  static const Color secondaryAccent = blueBright;
-  static const Color primaryBlue = bluePrimary; // Alias for compatibility
-  static const Color highlightGray = Color(0xFFE5E5E5);
+  // ── Borders ───────────────────────────────────────────────────────────────
+  static const Color border        = Color(0xFFE2E8F0); // slate-200
+  static const Color borderFocus   = Color(0xFF93C5FD); // blue-300
 
-  // Text colors
-  static const Color whiteText = Color(0xFFFDFDFD);
-  static const Color grayText = Color(0xFFA3A3A3);
-  static const Color lightGrayText = Color(0xFFD4D4D4);
+  // ── Text ──────────────────────────────────────────────────────────────────
+  static const Color textPrimary   = Color(0xFF0F172A); // slate-900
+  static const Color textSecondary = Color(0xFF475569); // slate-600
+  static const Color textMuted     = Color(0xFF94A3B8); // slate-400
 
-  // Background
-  static const Color blackBackground = deepBlack;
-  static const Color cardWhite = Color(0xFF111111);
+  // ── Legacy aliases (used in widgets that haven't been updated yet) ────────
+  static const Color purplePrimary   = accent;
+  static const Color purpleDark      = accentHover;
+  static const Color gradientBlue    = accent;
+  static const Color bluePink        = Color(0xFFEC4899);
+  static const Color blueAccent      = Color(0xFF64748B);
+  static const Color whiteText       = textPrimary;
+  static const Color grayText        = textMuted;
+  static const Color lightGrayText   = textSecondary;
+  static const Color blackBackground = pageBg;
+  static const Color carbonBlack     = surface;
+  static const Color carbonGrayDark  = Color(0xFFF8FAFC);
+  static const Color carbonGray      = Color(0xFFF1F5F9);
+  static const Color carbonGrayLight = Color(0xFFE2E8F0);
+  static Color glassBorder           = border;
+  static Color glassColor            = surface;
+  static Color glassHighlight        = accentLight;
 
-  // Glassmorphism (black & white)
-  static Color glassColor = Colors.white.withValues(alpha: 0.06);
-  static Color glassBorder = Colors.white.withValues(alpha: 0.25);
-  static Color glassHighlight = Colors.white.withValues(alpha: 0.12);
-  
-  static ThemeData get darkTheme {
-    final textTheme = GoogleFonts.poppinsTextTheme().apply(
-      bodyColor: whiteText,
-      displayColor: whiteText,
+  // ── Shadows ───────────────────────────────────────────────────────────────
+  static const List<BoxShadow> shadowSm = [
+    BoxShadow(color: Color(0x14000000), blurRadius: 4, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x0A000000), blurRadius: 2, offset: Offset(0, 1)),
+  ];
+  static const List<BoxShadow> shadow = [
+    BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 4)),
+  ];
+  static const List<BoxShadow> shadowLg = [
+    BoxShadow(color: Color(0x1A000000), blurRadius: 24, offset: Offset(0, 8)),
+  ];
+
+  // ── ThemeData ─────────────────────────────────────────────────────────────
+  static ThemeData get lightTheme {
+    final base = GoogleFonts.interTextTheme().apply(
+      bodyColor: textPrimary,
+      displayColor: textPrimary,
     );
 
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      primaryColor: bluePrimary,
-      scaffoldBackgroundColor: blackBackground,
+      brightness: Brightness.light,
+      primaryColor: accent,
+      scaffoldBackgroundColor: pageBg,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: bluePrimary,
-        brightness: Brightness.dark,
-        primary: bluePrimary,
-        secondary: blueBright,
-        background: blackBackground,
-        surface: carbonGrayDark,
+        seedColor: accent,
+        brightness: Brightness.light,
+        primary: accent,
+        secondary: accentLight,
+        surface: surface,
       ).copyWith(
-        onPrimary: whiteText,
-        onSecondary: pureBlack,
-        onSurface: whiteText,
-        onBackground: whiteText,
-        tertiary: blueAccent,
-        onTertiary: pureBlack,
+        onPrimary: Colors.white,
+        onSurface: textPrimary,
+        error: danger,
       ),
-      textTheme: textTheme.copyWith(
-        displayLarge: textTheme.displayLarge?.copyWith(fontSize: 32, fontWeight: FontWeight.w700),
-        displayMedium: textTheme.displayMedium?.copyWith(fontSize: 28, fontWeight: FontWeight.w700),
-        displaySmall: textTheme.displaySmall?.copyWith(fontSize: 24, fontWeight: FontWeight.w700),
-        headlineMedium: textTheme.headlineMedium?.copyWith(fontSize: 20, fontWeight: FontWeight.w600),
-        titleLarge: textTheme.titleLarge?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
-        titleMedium: textTheme.titleMedium?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
-        bodyLarge: textTheme.bodyLarge?.copyWith(fontSize: 16),
-        bodyMedium: textTheme.bodyMedium?.copyWith(fontSize: 14),
-        bodySmall: textTheme.bodySmall?.copyWith(fontSize: 12),
+      textTheme: base.copyWith(
+        displayLarge:  base.displayLarge?.copyWith(fontSize: 32, fontWeight: FontWeight.w700, letterSpacing: -0.5),
+        displayMedium: base.displayMedium?.copyWith(fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.5),
+        displaySmall:  base.displaySmall?.copyWith(fontSize: 24, fontWeight: FontWeight.w700),
+        headlineMedium:base.headlineMedium?.copyWith(fontSize: 20, fontWeight: FontWeight.w600),
+        titleLarge:    base.titleLarge?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
+        titleMedium:   base.titleMedium?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
+        bodyLarge:     base.bodyLarge?.copyWith(fontSize: 16, color: textPrimary),
+        bodyMedium:    base.bodyMedium?.copyWith(fontSize: 14, color: textSecondary),
+        bodySmall:     base.bodySmall?.copyWith(fontSize: 12, color: textMuted),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: carbonBlack,
-        foregroundColor: whiteText,
+        backgroundColor: surface,
+        foregroundColor: textPrimary,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: GoogleFonts.poppins(
-          color: whiteText,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        centerTitle: false,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        titleTextStyle: GoogleFonts.inter(
+          color: textPrimary,
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
         ),
-          iconTheme: IconThemeData(
-            color: whiteText,
-          ),
-        ),
-
-        cardTheme: CardThemeData(
-        color: cardWhite,
+        iconTheme: const IconThemeData(color: textSecondary),
+        shape: const Border(bottom: BorderSide(color: border)),
+      ),
+      cardTheme: CardThemeData(
+        color: surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: glassBorder),
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: border),
         ),
+        shadowColor: Colors.transparent,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: bluePrimary,
-          foregroundColor: whiteText,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          backgroundColor: accent,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 0,
+          textStyle: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
         ).copyWith(
           backgroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return bluePrimary.withValues(alpha: 0.3);
-            }
-            return bluePrimary;
+            if (states.contains(WidgetState.disabled)) return accent.withValues(alpha: 0.4);
+            if (states.contains(WidgetState.hovered)) return accentHover;
+            return accent;
           }),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: textSecondary,
+          side: const BorderSide(color: border),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.08),
+        fillColor: surface,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: glassBorder),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: glassBorder),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: bluePrimary, width: 2),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: borderFocus, width: 2),
         ),
-        labelStyle: const TextStyle(color: whiteText),
-        hintStyle: TextStyle(color: whiteText.withValues(alpha: 0.6)),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: danger),
+        ),
+        labelStyle: const TextStyle(color: textSecondary, fontSize: 14),
+        hintStyle: const TextStyle(color: textMuted, fontSize: 14),
+      ),
+      dividerTheme: const DividerThemeData(color: border, thickness: 1, space: 1),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: textPrimary,
+        contentTextStyle: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
-  
-  // Glassmorphism decoration with gradient
-  static BoxDecoration glassDecoration({
-    double borderRadius = 16,
-    Color? color,
-    bool useGradient = true,
-  }) {
-    if (useGradient) {
-      return BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color ?? glassColor,
-            glassHighlight,
-            color ?? glassColor,
-          ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-        borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(
-          color: glassBorder,
-          width: 1.5,
-        ),
+
+  // Keep darkTheme as alias for lightTheme — we now use light theme everywhere
+  static ThemeData get darkTheme => lightTheme;
+
+  // ── Reusable decorations ──────────────────────────────────────────────────
+
+  /// Standard card decoration — white, border, subtle shadow.
+  static BoxDecoration cardDecoration({double radius = 12}) => BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: border),
+        boxShadow: shadowSm,
+      );
+
+  /// Accent-filled button gradient (kept for backward compat with existing widgets).
+  static BoxDecoration buttonGradientDecoration({
+    AlignmentGeometry begin = Alignment.centerLeft,
+    AlignmentGeometry end = Alignment.centerRight,
+  }) =>
+      BoxDecoration(
+        color: accent,
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Colors.white.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-            spreadRadius: 0,
+            color: accent.withValues(alpha: 0.25),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       );
-    }
-    return BoxDecoration(
-      color: color ?? glassColor,
-      borderRadius: BorderRadius.circular(borderRadius),
-      border: Border.all(
-        color: glassBorder,
-        width: 1.5,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.3),
-          blurRadius: 15,
-          offset: const Offset(0, 6),
-        ),
-      ],
-    );
-  }
-  
-  // Elegant gradient decorations
+
+  /// Glass decoration — now just a clean white card.
+  static BoxDecoration glassDecoration({
+    double borderRadius = 12,
+    Color? color,
+    bool useGradient = false,
+  }) =>
+      BoxDecoration(
+        color: color ?? surface,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(color: border),
+        boxShadow: shadowSm,
+      );
+
   static BoxDecoration gradientDecoration({
     AlignmentGeometry begin = Alignment.topLeft,
     AlignmentGeometry end = Alignment.bottomRight,
     List<Color>? customColors,
-  }) {
-    return BoxDecoration(
-      gradient: LinearGradient(
-        begin: begin,
-        end: end,
-        colors: customColors ?? [
-          carbonGrayDark,
-          carbonBlack,
-          blackBackground,
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ),
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.white.withValues(alpha: 0.08),
-          blurRadius: 20,
-          offset: const Offset(0, 8),
-          spreadRadius: 2,
-        ),
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.4),
-          blurRadius: 15,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    );
-  }
-  
-  // Button gradient decoration (purple to blue/pink)
-  static BoxDecoration buttonGradientDecoration({
-    AlignmentGeometry begin = Alignment.centerLeft,
-    AlignmentGeometry end = Alignment.centerRight,
-  }) {
-    return BoxDecoration(
-      gradient: LinearGradient(
-        begin: begin,
-        end: end,
-        colors: [
-          purplePrimary,
-          gradientBlue,
-          bluePink,
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ),
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: purplePrimary.withValues(alpha: 0.4),
-          blurRadius: 15,
-          offset: const Offset(0, 6),
-          spreadRadius: 0,
-        ),
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.3),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ],
-    );
-  }
-  
-  // Subtle gradient for cards
+  }) =>
+      BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border),
+        boxShadow: shadowSm,
+      );
+
   static BoxDecoration cardGradientDecoration({
     AlignmentGeometry begin = Alignment.topLeft,
     AlignmentGeometry end = Alignment.bottomRight,
-  }) {
-    return BoxDecoration(
-      gradient: LinearGradient(
-        begin: begin,
-        end: end,
-        colors: [
-          carbonGray.withValues(alpha: 0.6),
-          carbonGrayDark.withValues(alpha: 0.4),
-          carbonBlack.withValues(alpha: 0.3),
-        ],
-      ),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: glassBorder,
-        width: 1.5,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.white.withValues(alpha: 0.05),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    );
-  }
-  
-  // Animated shimmer effect decoration
-  static BoxDecoration shimmerDecoration() {
-    return BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          carbonGrayDark,
-          carbonGray,
-          carbonGrayDark,
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ),
-      borderRadius: BorderRadius.circular(16),
-    );
-  }
-}
+  }) =>
+      cardDecoration();
 
+  static BoxDecoration shimmerDecoration() => BoxDecoration(
+        color: surfaceHover,
+        borderRadius: BorderRadius.circular(12),
+      );
+}

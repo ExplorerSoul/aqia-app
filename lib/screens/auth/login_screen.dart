@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/glass_card.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_client.dart';
 import '../../config/app_config.dart';
@@ -32,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-
     try {
       await AuthService.instance.login(
         email: _emailController.text.trim(),
@@ -45,17 +43,9 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } on ApiException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
-      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -64,169 +54,154 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.blackBackground,
+      backgroundColor: AppTheme.pageBg,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppTheme.purplePrimary, AppTheme.gradientBlue],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(Icons.mic, size: 44, color: Colors.white),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppTheme.accent,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'AQIA',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.whiteText,
-                      letterSpacing: 4,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Your AI Interview Coach',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppTheme.lightGrayText,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
+                  child: const Icon(Icons.mic, size: 28, color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                const Text('AQIA',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
+                        color: AppTheme.textPrimary, letterSpacing: -0.5)),
+                const SizedBox(height: 4),
+                const Text('AI Interview Assistant',
+                    style: TextStyle(fontSize: 14, color: AppTheme.textMuted)),
+                const SizedBox(height: 32),
 
-                  // Email
-                  GlassCard(
-                    padding: EdgeInsets.zero,
-                    child: TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: AppTheme.whiteText),
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined, color: AppTheme.grayText),
-                        border: InputBorder.none,
-                      ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Please enter your email';
-                        if (!v.contains('@')) return 'Please enter a valid email';
-                        return null;
-                      },
-                    ),
+                // Card
+                Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.border),
+                    boxShadow: AppTheme.shadow,
                   ),
-                  const SizedBox(height: 16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Log in',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,
+                                color: AppTheme.textPrimary)),
+                        const SizedBox(height: 20),
 
-                  // Password
-                  GlassCard(
-                    padding: EdgeInsets.zero,
-                    child: TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      style: const TextStyle(color: AppTheme.whiteText),
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.grayText),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                            color: AppTheme.grayText,
-                          ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        // Email
+                        _fieldLabel('Email'),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15),
+                          decoration: const InputDecoration(hintText: 'you@example.com'),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Please enter your email';
+                            if (!v.contains('@')) return 'Please enter a valid email';
+                            return null;
+                          },
                         ),
-                        border: InputBorder.none,
-                      ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Please enter your password';
-                        if (v.length < 6) return 'Password must be at least 6 characters';
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+                        const SizedBox(height: 16),
 
-                  // Login button
-                  SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      decoration: AppTheme.buttonGradientDecoration(),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _isLoading ? null : _handleLogin,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            alignment: Alignment.center,
+                        // Password
+                        _fieldLabel('Password'),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15),
+                          decoration: InputDecoration(
+                            hintText: '••••••••',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                color: AppTheme.textMuted, size: 20,
+                              ),
+                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            ),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Please enter your password';
+                            if (v.length < 6) return 'Password must be at least 6 characters';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Login button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _handleLogin,
                             child: _isLoading
-                                ? const SizedBox(
-                                    height: 22,
-                                    width: 22,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                  )
-                                : const Text(
-                                    'Log In',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
+                                ? const SizedBox(height: 18, width: 18,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                : const Text('Log In'),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                ),
+                const SizedBox(height: 16),
 
-                  // Sign up link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account? ",
-                        style: TextStyle(color: AppTheme.lightGrayText),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const SignupScreen()),
-                        ),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(color: AppTheme.purplePrimary, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Backend test button — visible in debug/mock mode only
-                  if (AppConfig.mockMode || true) // always show for easy access during testing
-                    TextButton.icon(
+                // Sign up link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account? ",
+                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+                    TextButton(
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const BackendTestScreen()),
+                        MaterialPageRoute(builder: (_) => const SignupScreen()),
                       ),
-                      icon: const Icon(Icons.wifi_tethering, size: 16, color: AppTheme.grayText),
-                      label: const Text('Test Backend Connection',
-                          style: TextStyle(fontSize: 12, color: AppTheme.grayText)),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppTheme.accent,
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text('Sign Up', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                     ),
-                ],
-              ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Backend test link
+                TextButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BackendTestScreen()),
+                  ),
+                  icon: const Icon(Icons.wifi_tethering, size: 14, color: AppTheme.textMuted),
+                  label: const Text('Test Backend Connection',
+                      style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                  style: TextButton.styleFrom(foregroundColor: AppTheme.textMuted),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
   }
+
+  Widget _fieldLabel(String text) => Text(text,
+      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textSecondary));
 }
