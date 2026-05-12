@@ -250,12 +250,12 @@ class _InterviewScreenState extends State<InterviewScreen> {
       // Save to backend (best-effort, non-blocking)
       _saveInterviewToBackend(reviewJson);
 
-      // Save to local question bank
+      // Save to local question bank (awaited so it completes before navigating)
       final reviewQuestions = (reviewJson['questions'] as List<dynamic>?)
               ?.map((e) => e as Map<String, dynamic>)
               .toList() ??
           [];
-      QuestionBankService.addFromSession(
+      await QuestionBankService.addFromSession(
         domain: widget.config.domain,
         qaPairs: _qaPairs,
         reviewQuestions: reviewQuestions,
@@ -264,7 +264,15 @@ class _InterviewScreenState extends State<InterviewScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => InterviewReportScreen(report: report)),
+        MaterialPageRoute(
+          builder: (_) => InterviewReportScreen(
+            report: report,
+            onDone: () {
+              // Navigate back to dashboard root — the UniqueKey will force refresh
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          ),
+        ),
       );    } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);

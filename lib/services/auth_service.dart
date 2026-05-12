@@ -25,7 +25,7 @@ class AuthService {
     }
   }
 
-  /// Login with email + password. Saves the returned JWT automatically.
+  /// Login with email + password. Saves the returned JWT and fetches name.
   Future<void> login({
     required String email,
     required String password,
@@ -37,6 +37,14 @@ class AuthService {
     final token = data['access_token'] as String?;
     if (token == null) throw const ApiException(500, 'No token in login response');
     await TokenService.instance.saveToken(token);
+    // Fetch name from backend so profile shows real name
+    try {
+      final profile = await ApiClient.instance.get('/api/me');
+      final name = profile['name'] as String?;
+      if (name != null && name.isNotEmpty) {
+        await TokenService.instance.saveName(name);
+      }
+    } catch (_) {}
   }
 
   /// Clear the stored token and name (logout).

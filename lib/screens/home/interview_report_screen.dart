@@ -10,7 +10,8 @@ import '../../widgets/glass_card.dart';
 
 class InterviewReportScreen extends StatelessWidget {
   final InterviewReport report;
-  const InterviewReportScreen({super.key, required this.report});
+  final VoidCallback? onDone;
+  const InterviewReportScreen({super.key, required this.report, this.onDone});
 
   // ─── Download as PDF ──────────────────────────────────────────────────────
 
@@ -159,7 +160,13 @@ class InterviewReportScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.popUntil(context, (r) => r.isFirst),
+          onPressed: () {
+            if (onDone != null) {
+              onDone!();
+            } else {
+              Navigator.popUntil(context, (r) => r.isFirst);
+            }
+          },
         ),
         title: const Text('Performance Review',
             style: TextStyle(color: AppTheme.whiteText, fontWeight: FontWeight.w600, fontSize: 17)),
@@ -191,29 +198,21 @@ class InterviewReportScreen extends StatelessWidget {
             // Download button at bottom too
             SizedBox(
               width: double.infinity,
-              child: Container(
-                decoration: AppTheme.buttonGradientDecoration(),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _downloadReport(context),
-                    borderRadius: BorderRadius.circular(12),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.download_outlined, color: Colors.white, size: 20),
-                          SizedBox(width: 10),
-                          Text('Download Report',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
-                        ],
-                      ),
-                    ),
-                  ),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  if (onDone != null) {
+                    onDone!();
+                  } else {
+                    Navigator.popUntil(context, (r) => r.isFirst);
+                  }
+                },
+                icon: const Icon(Icons.home_outlined, size: 18),
+                label: const Text('Back to Dashboard'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: AppTheme.border),
+                  foregroundColor: AppTheme.textSecondary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
               ),
             ),
