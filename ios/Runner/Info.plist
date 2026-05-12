@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>Aqia</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +43,22 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Microphone — required for voice input (record package) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>AQIA needs microphone access to record your interview answers for AI transcription.</string>
+
+	<!-- Speech recognition — required for live transcript display -->
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>AQIA uses speech recognition to show a live transcript of your answers during interviews.</string>
+
+	<!-- Photo library — required by file_picker on older iOS -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>AQIA may access your photo library to let you upload a profile photo.</string>
+
+	<!-- App display name -->
+	<key>CFBundleDisplayName</key>
+	<string>AQIA</string>
 </dict>
+</plist>
 </plist>
