@@ -37,9 +37,6 @@ dependencies:
   # Temp directory for audio files
   path_provider: ^2.1.4
 
-dependency_overrides:
-  record_linux: ^1.3.0
-
   # UI & Animations
   flutter_animate: ^4.5.0
 
@@ -64,6 +61,10 @@ dependency_overrides:
 
   # JWT decode (check expiry)
   jwt_decoder: ^2.0.1
+
+# Override record_linux to a version compatible with record 5.x interface
+dependency_overrides:
+  record_linux: ^1.3.0
 
 dev_dependencies:
   flutter_test:

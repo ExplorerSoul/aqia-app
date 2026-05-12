@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:record/record.dart';
@@ -8,10 +7,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'api_client.dart';
 
-/// Hybrid speech service matching the web app's approach:
+/// Hybrid speech service:
 /// - TTS: Backend Google Neural2 → flutter_tts fallback
 /// - STT: record package for raw audio → Whisper via /api/transcribe
-///        + live speech_to_text for interim display (optional)
 class SpeechService {
   SpeechService._();
   static final SpeechService instance = SpeechService._();
@@ -24,26 +22,27 @@ class SpeechService {
   bool _isRecording = false;
   bool _stopped = false;
 
-  // Live transcript callback (called during recording with partial text)
   void Function(String)? _onLiveTranscript;
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────
 
   Future<void> init() async {
-    await _tts.setLanguage('en-US');
-    await _tts.setSpeechRate(0.5);
-    await _tts.setVolume(1.0);
-    await _tts.setPitch(1.0);
+    try {
+      await _tts.setLanguage('en-US');
+      await _tts.setSpeechRate(0.5);
+      await _tts.setVolume(1.0);
+      await _tts.setPitch(1.0);
+    } catch (e) {
+      debugPrint('TTS init failed: $e');
+    }
   }
 
-  /// Call when navigating away from the interview to stop everything.
   Future<void> stopAll() async {
     _stopped = true;
     await stopSpeaking();
     await stopRecording();
   }
 
-  /// Reset stopped flag when starting a new interview.
   void reset() {
     _stopped = false;
   }
@@ -53,14 +52,17 @@ class SpeechService {
   bool get isPlaying => _isPlaying;
 
   /// Speak text. Tries backend Google TTS first, falls back to flutter_tts.
+  /// Never throws — all errors are caught and logged.
   Future<void> speak(String text) async {
     if (text.isEmpty || _stopped) return;
-    await stopSpeaking();
-    if (_stopped) return;
 
+    try {
+      await stopSpeaking();
+    } catch (_) {}
+
+    if (_stopped) return;
     _isPlaying = true;
 
-    // Clean text for TTS
     final clean = text
         .replaceAll(RegExp(r'[*_`~#]'), '')
         .replaceAll(RegExp(r'https?://\S+'), 'link')
@@ -74,11 +76,16 @@ class SpeechService {
         _isPlaying = false;
         return;
       }
-      debugPrint('Backend TTS failed, using flutter_tts: $e');
-      await _speakViaTts(clean);
+      debugPrint('Backend TTS failed, falling back to device TTS: $e');
+      try {
+        await _speakViaTts(clean);
+      } catch (e2) {
+        debugPrint('Device TTS also failed: $e2');
+        // Silent failure — interview continues without audio
+      }
+    } finally {
+      _isPlaying = false;
     }
-
-    _isPlaying = false;
   }
 
   Future<void> _speakViaBackend(String text) async {
@@ -91,18 +98,33 @@ class SpeechService {
 
     if (_stopped) throw Exception('stopped');
 
-    // Write to temp file and play
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/aqia_tts_${DateTime.now().millisecondsSinceEpoch}.mp3');
     await file.writeAsBytes(bytes);
 
     final completer = Completer<void>();
-    _audioPlayer.onPlayerComplete.listen((_) {
+    StreamSubscription? sub;
+    sub = _audioPlayer.onPlayerComplete.listen((_) {
       if (!completer.isCompleted) completer.complete();
+      sub?.cancel();
     });
 
-    await _audioPlayer.play(DeviceFileSource(file.path));
-    await completer.future.timeout(const Duration(seconds: 30));
+    try {
+      await _audioPlayer.play(DeviceFileSource(file.path));
+      await completer.future.timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          sub?.cancel();
+          completer.complete();
+        },
+      );
+    } catch (e) {
+      sub?.cancel();
+      rethrow;
+    }
+
+    // Clean up temp file
+    try { await file.delete(); } catch (_) {}
   }
 
   Future<void> _speakViaTts(String text) async {
@@ -112,65 +134,99 @@ class SpeechService {
       if (!completer.isCompleted) completer.complete();
     });
     _tts.setErrorHandler((msg) {
+      debugPrint('TTS error: $msg');
       if (!completer.isCompleted) completer.complete();
     });
     await _tts.speak(text);
-    await completer.future.timeout(const Duration(seconds: 30));
+    await completer.future.timeout(
+      const Duration(seconds: 30),
+      onTimeout: () => completer.complete(),
+    );
   }
 
   Future<void> stopSpeaking() async {
     _isPlaying = false;
-    await _audioPlayer.stop();
-    await _tts.stop();
+    try { await _audioPlayer.stop(); } catch (_) {}
+    try { await _tts.stop(); } catch (_) {}
   }
 
   // ─── STT ──────────────────────────────────────────────────────────────────
 
   bool get isRecording => _isRecording;
 
-  /// Start recording audio. [onLiveTranscript] receives partial text updates.
+  /// Start recording. Throws if microphone permission is denied.
   Future<void> startRecording({void Function(String)? onLiveTranscript}) async {
     if (_isRecording || _stopped) return;
     _onLiveTranscript = onLiveTranscript;
 
-    final hasPermission = await _recorder.hasPermission();
+    bool hasPermission = false;
+    try {
+      hasPermission = await _recorder.hasPermission();
+    } catch (e) {
+      throw Exception('Could not check microphone permission: $e');
+    }
+
     if (!hasPermission) {
-      throw Exception('Microphone permission denied');
+      throw Exception('Microphone permission denied. Please allow microphone access in Settings.');
     }
 
     final dir = await getTemporaryDirectory();
     final path = '${dir.path}/aqia_recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
-    await _recorder.start(
-      const RecordConfig(
-        encoder: AudioEncoder.aacLc,
-        bitRate: 128000,
-        sampleRate: 16000,
-      ),
-      path: path,
-    );
-
-    _isRecording = true;
+    try {
+      await _recorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          bitRate: 128000,
+          sampleRate: 16000,
+        ),
+        path: path,
+      );
+      _isRecording = true;
+    } catch (e) {
+      throw Exception('Failed to start recording: $e');
+    }
   }
 
-  /// Stop recording and transcribe via Whisper. Returns the transcript text.
+  /// Stop recording and transcribe via Whisper. Returns transcript or empty string.
+  /// Never throws — transcription failures return empty string gracefully.
   Future<String> stopRecordingAndTranscribe() async {
     if (!_isRecording) return '';
     _isRecording = false;
     _onLiveTranscript = null;
 
-    final path = await _recorder.stop();
+    String? path;
+    try {
+      path = await _recorder.stop();
+    } catch (e) {
+      debugPrint('Error stopping recorder: $e');
+      return '';
+    }
+
     if (path == null) return '';
 
     final file = File(path);
-    if (!await file.exists()) return '';
-    final size = await file.length();
-    if (size < 1000) return ''; // Too short to be real speech
+    try {
+      if (!await file.exists()) return '';
+      final size = await file.length();
+      if (size < 500) {
+        // Too short — likely silence or mic not working
+        debugPrint('Recording too short ($size bytes), skipping transcription');
+        return '';
+      }
+    } catch (e) {
+      debugPrint('Error checking recording file: $e');
+      return '';
+    }
 
-    return _transcribeFile(file);
+    final transcript = await _transcribeFile(file);
+
+    // Clean up recording file
+    try { await file.delete(); } catch (_) {}
+
+    return transcript;
   }
 
-  /// Stop recording without transcribing (e.g. on early exit).
   Future<void> stopRecording() async {
     if (!_isRecording) return;
     _isRecording = false;
@@ -183,8 +239,7 @@ class SpeechService {
   Future<String> _transcribeFile(File file) async {
     if (_stopped) return '';
 
-    // Retry up to 3 times
-    for (int i = 0; i < 3; i++) {
+    for (int attempt = 0; attempt < 3; attempt++) {
       if (_stopped) return '';
       try {
         final result = await ApiClient.instance.postMultipart(
@@ -195,18 +250,25 @@ class SpeechService {
           mimeType: 'audio/m4a',
           fields: {'model': 'whisper-large-v3'},
         );
-        return result['text'] as String? ?? '';
+        final text = result['text'] as String? ?? '';
+        if (text.isNotEmpty) return text;
+        // Empty transcript — don't retry
+        return '';
       } catch (e) {
-        debugPrint('Transcribe attempt ${i + 1} failed: $e');
-        if (i < 2) await Future.delayed(const Duration(seconds: 1));
+        debugPrint('Transcription attempt ${attempt + 1}/3 failed: $e');
+        if (attempt < 2) {
+          await Future.delayed(const Duration(seconds: 1));
+        }
       }
     }
+
+    debugPrint('All transcription attempts failed — returning empty');
     return '';
   }
 
   void dispose() {
-    _audioPlayer.dispose();
-    _recorder.dispose();
-    _tts.stop();
+    try { _audioPlayer.dispose(); } catch (_) {}
+    try { _recorder.dispose(); } catch (_) {}
+    try { _tts.stop(); } catch (_) {}
   }
 }

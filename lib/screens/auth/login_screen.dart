@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_client.dart';
-import '../../config/app_config.dart';
 import 'signup_screen.dart';
 import '../home/dashboard_screen.dart';
 import '../test/backend_test_screen.dart';
@@ -183,17 +183,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // Backend test link
-                TextButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const BackendTestScreen()),
+                // Backend test link — debug builds only
+                if (kDebugMode)
+                  TextButton.icon(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BackendTestScreen()),
+                    ),
+                    icon: const Icon(Icons.wifi_tethering, size: 14, color: AppTheme.textMuted),
+                    label: const Text('Test Backend Connection',
+                        style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                    style: TextButton.styleFrom(foregroundColor: AppTheme.textMuted),
                   ),
-                  icon: const Icon(Icons.wifi_tethering, size: 14, color: AppTheme.textMuted),
-                  label: const Text('Test Backend Connection',
-                      style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                  style: TextButton.styleFrom(foregroundColor: AppTheme.textMuted),
-                ),
               ],
             ),
           ),
