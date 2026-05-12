@@ -265,8 +265,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => InterviewReportScreen(report: report)),
-      );
-    } catch (e) {
+      );    } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(

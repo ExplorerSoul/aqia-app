@@ -303,30 +303,35 @@ class InterviewReportScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.green.shade900.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green.shade700.withValues(alpha: 0.4)),
+        color: AppTheme.successLight,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.successBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Icon(Icons.mic, color: Colors.green.shade400, size: 18),
+            Icon(Icons.mic, color: AppTheme.success, size: 18),
             const SizedBox(width: 8),
-            _label('SPEECH ANALYTICS'),
+            Text('SPEECH ANALYTICS',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                    color: AppTheme.success, letterSpacing: 1.2)),
           ]),
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _speechStat('${report.wordsPerMinute}', 'words / min', Colors.green.shade300)),
+              Expanded(child: _speechStat(
+                '${report.wordsPerMinute}', 'words / min', AppTheme.success)),
               const SizedBox(width: 12),
-              Expanded(child: _speechStat('${report.fillerWords}', 'filler words', report.fillerWords > 5 ? Colors.orange : Colors.green.shade300)),
+              Expanded(child: _speechStat(
+                '${report.fillerWords}', 'filler words',
+                report.fillerWords > 5 ? AppTheme.warning : AppTheme.success)),
             ],
           ),
           if (report.speechRecommendation.isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(report.speechRecommendation,
-                style: TextStyle(fontSize: 13, color: AppTheme.lightGrayText, height: 1.4)),
+                style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary, height: 1.4)),
           ],
         ],
       ),
@@ -335,16 +340,17 @@ class InterviewReportScreen extends StatelessWidget {
 
   Widget _speechStat(String value, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.green.shade900.withValues(alpha: 0.2),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Column(
         children: [
-          Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+          Text(value, style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: color)),
           const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 11, color: AppTheme.grayText)),
+          Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textMuted, fontWeight: FontWeight.w500)),
         ],
       ),
     );

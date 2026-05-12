@@ -19,6 +19,8 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
+  // Using a key forces _HomeTab to rebuild (and re-fetch) when tab is re-selected
+  Key _homeKey = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +33,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Expanded(
               child: IndexedStack(
                 index: _selectedIndex,
-                children: const [
-                  _HomeTab(),
-                  AnalyticsScreen(),
-                  ProfileScreen(),
+                children: [
+                  _HomeTab(key: _homeKey),
+                  const AnalyticsScreen(),
+                  const ProfileScreen(),
                 ],
               ),
             ),
@@ -109,7 +111,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _navItem(IconData icon, IconData activeIcon, String label, int index) {
     final isSelected = _selectedIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _selectedIndex = index),
+      onTap: () {
+        setState(() {
+          // If tapping home tab again, force a refresh
+          if (index == 0 && _selectedIndex == 0) {
+            _homeKey = UniqueKey();
+          } else if (index == 0) {
+            _homeKey = UniqueKey(); // always refresh when switching to home
+          }
+          _selectedIndex = index;
+        });
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
