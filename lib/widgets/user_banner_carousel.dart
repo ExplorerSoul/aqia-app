@@ -222,7 +222,7 @@ class _UserBannerCarouselState extends State<UserBannerCarousel> {
           onPanEnd: (_) => _resumeAutoScroll(),
           onPanCancel: () => _resumeAutoScroll(),
           child: SizedBox(
-            height: 148,
+            height: 164,
             child: PageView.builder(
               controller: _controller,
               itemCount: _virtualCount,

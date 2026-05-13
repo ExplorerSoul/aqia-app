@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../theme/app_theme.dart';
 import '../../widgets/glass_card.dart';
-import '../../services/api_client.dart';
 
 /// A question asked in a past interview, stored locally.
 class SavedQuestion {
@@ -109,14 +108,23 @@ class _QuestionBankScreenState extends State<QuestionBankScreen> {
     _load();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload every time this screen becomes visible (e.g. after returning from interview)
+    _load();
+  }
+
   Future<void> _load() async {
+    if (mounted) setState(() => _loading = true);
     final questions = await QuestionBankService.load();
-    // Newest first
     questions.sort((a, b) => b.date.compareTo(a.date));
     if (mounted) {
       setState(() {
         _questions = questions;
-        _filtered = questions;
+        _filtered = _selectedDomain == 'All'
+            ? questions
+            : questions.where((q) => q.domain == _selectedDomain).toList();
         _loading = false;
       });
     }
@@ -156,12 +164,23 @@ class _QuestionBankScreenState extends State<QuestionBankScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppTheme.purplePrimary))
           : _questions.isEmpty
-              ? _buildEmpty()
-              : Column(
-                  children: [
-                    _buildDomainFilter(),
-                    Expanded(child: _buildList()),
-                  ],
+              ? RefreshIndicator(
+                  onRefresh: _load,
+                  color: AppTheme.purplePrimary,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(height: 400, child: _buildEmpty()),
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: _load,
+                  color: AppTheme.purplePrimary,
+                  child: Column(
+                    children: [
+                      _buildDomainFilter(),
+                      Expanded(child: _buildList()),
+                    ],
+                  ),
                 ),
     );
   }

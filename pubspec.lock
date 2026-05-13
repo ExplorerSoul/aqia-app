@@ -194,7 +194,7 @@ packages:
     source: hosted
     version: "7.0.1"
   file_picker:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: file_picker
       sha256: ab13ae8ef5580a411c458d6207b6774a6c237d77ac37011b13994879f68a8810
@@ -223,7 +223,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_animate:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: flutter_animate
       sha256: "7befe2d3252728afb77aecaaea1dec88a89d35b9b1d2eea6d04479e8af9117b5"
@@ -281,7 +281,7 @@ packages:
     source: sdk
     version: "0.0.0"
   font_awesome_flutter:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: font_awesome_flutter
       sha256: b738e35f8bb4957896c34957baf922f99c5d415b38ddc8b070d14b7fa95715d4
@@ -289,7 +289,7 @@ packages:
     source: hosted
     version: "10.9.1"
   google_fonts:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: google_fonts
       sha256: df9763500dadba0155373e9cb44e202ce21bd9ed5de6bdbd05c5854e86839cb8
@@ -321,7 +321,7 @@ packages:
     source: hosted
     version: "4.8.0"
   intl:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: intl
       sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
@@ -337,7 +337,7 @@ packages:
     source: hosted
     version: "4.9.0"
   jwt_decoder:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: jwt_decoder
       sha256: "54774aebf83f2923b99e6416b4ea915d47af3bde56884eb622de85feabbc559f"
@@ -577,7 +577,7 @@ packages:
     source: hosted
     version: "1.0.7"
   share_plus:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: share_plus
       sha256: fce43200aa03ea87b91ce4c3ac79f0cecd52e2a7a56c7a4185023c271fbfa6da
@@ -593,7 +593,7 @@ packages:
     source: hosted
     version: "5.0.2"
   shared_preferences:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "6e8bf70b7fef813df4e9a36f658ac46d107db4b4cfe1048b477d4e453a8159f5"
@@ -718,7 +718,7 @@ packages:
     source: hosted
     version: "27.2.5"
   syncfusion_flutter_pdf:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: syncfusion_flutter_pdf
       sha256: da7fb9d156fafdce7099dc711c1a2dc522c48361188bd4be78520b22c99bbafd
